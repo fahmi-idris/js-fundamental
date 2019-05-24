@@ -18,3 +18,34 @@ function getCourse(courseId) {
   }
   return Promise.resolve(courses[courseId]);
 }
+
+function oldPause(delay, cb) {
+  setTimeout(function() {
+    console.log('paused for ' + delay + ' ms');
+    cb();
+  }, delay);
+}
+
+(function() {
+  var sequence;
+  var run = function(generator) {
+    sequence = generator();
+    var next = sequence.next();
+  }
+
+  var resume = function() {
+    sequence.next();
+  }
+
+  window.async = {
+    run: run,
+    resume: resume
+  }
+}());
+
+function pause(delay) {
+  setTimeout(function() {
+    console.log('paused for ' + delay + ' ms');
+    async.resume();
+  }, delay);
+}

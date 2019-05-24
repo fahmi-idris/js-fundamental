@@ -86,6 +86,55 @@ describe("promises", function() {
   it("should execute after all promises with all", function(done) {
     done();
   });
+  it("should be difficult to read with regular async", function() {
+    console.log('start');
+    oldPause(500, function() {
+      console.log('middle');
+      oldPause(500, function() {
+        console.log('end');
+      });
+    });
+  });
+  it("should be easier to read with generators", function(done) {
+    var $__0 = $traceurRuntime.initGeneratorFunction(main);
+    function main() {
+      return $traceurRuntime.createGeneratorInstance(function($ctx) {
+        while (true)
+          switch ($ctx.state) {
+            case 0:
+              console.log('start');
+              $ctx.state = 10;
+              break;
+            case 10:
+              $ctx.state = 2;
+              return pause(500);
+            case 2:
+              $ctx.maybeThrow();
+              $ctx.state = 4;
+              break;
+            case 4:
+              console.log('middle');
+              $ctx.state = 12;
+              break;
+            case 12:
+              $ctx.state = 6;
+              return pause(500);
+            case 6:
+              $ctx.maybeThrow();
+              $ctx.state = 8;
+              break;
+            case 8:
+              console.log('end');
+              done();
+              $ctx.state = -2;
+              break;
+            default:
+              return $ctx.end();
+          }
+      }, $__0, this);
+    }
+    async.run(main);
+  });
 });
 
 //# sourceMappingURL=Promise.js.map
